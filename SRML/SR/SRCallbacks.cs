@@ -30,14 +30,16 @@ namespace SRML.SR
         public delegate void OnBlueprintUnlockedDelegate(Gadget.Id blueprint);
         public delegate void OnBlueprintPurchasedDelegate(Gadget.Id blueprint);
         public delegate void OnZoneEnteredDelegate(ZoneDirector.Zone zone, PlayerState playerState);
+        public delegate void OnLevelBoughtDelegate(int level);
         internal delegate void OnGameContextReadyDelegate();
-            
+
         public static event OnSaveGameLoadedDelegate OnSaveGameLoaded;
         public static event OnSaveGameLoadedDelegate PreSaveGameLoaded;
         public static event OnSaveGameLoadedDelegate PreSaveGameLoad;
         public static event OnMainMenuLoadedDelegate OnMainMenuLoaded;
         public static event OnActorSpawnDelegate OnActorSpawn;
         public static event OnZoneEnteredDelegate OnZoneEntered;
+        public static event OnLevelBoughtDelegate OnLevelBought;
         internal static event OnGameContextReadyDelegate OnGameContextReady;
 
         internal static void OnLoad()
@@ -56,6 +58,11 @@ namespace SRML.SR
         }
 
         internal static void OnActorSpawnCallback(Identifiable.Id id,GameObject obj, ActorModel model) => OnActorSpawn?.Invoke(id, obj, model);
+
+        internal static void OnLevelBoughtCallback(int level)
+        {
+            OnLevelBought?.Invoke(level);
+        }
 
         internal static void PreSceneLoad(SceneContext t)
         {
