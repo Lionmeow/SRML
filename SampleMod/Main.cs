@@ -20,7 +20,7 @@ namespace SampleMod
         public void PreLoad()
         {
             Debug.Log("We did it!");
-            HarmonyPatcher.GetInstance().PatchAll(Assembly.GetExecutingAssembly());
+            HarmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
 
 
             // this code registers a callback that's run every time a saved game is loaded

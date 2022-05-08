@@ -33,7 +33,6 @@ namespace SRML.Console.Commands
                     gameobject.GetComponentInParent<LandPlotLocation>().Replace(gameobject.GetComponentInParent<LandPlot>(), GameContext.Instance.LookupDirector.GetPlotPrefab(LandPlot.Id.EMPTY));
                 }
             }
-            failure:
             Console.LogError("Not looking at a valid object!");
             return false;
         }

@@ -108,7 +108,7 @@ namespace SRML.SR.SaveSystem.Format
                         }
                         catch(Exception e)
                         {
-                            throw;
+                            throw e;
                         }
                     }
                 }
