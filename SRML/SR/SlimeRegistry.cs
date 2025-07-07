@@ -172,7 +172,7 @@ namespace SRML.SR
             if (slime1.QubitAppearance != null || slime2.QubitAppearance != null)
             {
                 SlimeAppearance qubit = (SlimeAppearance)PrefabUtils.DeepCopyObject(appearance);
-                List<SlimeAppearanceStructure> qStructures = qubit.Structures.Where(x => x.DefaultMaterials[0].HasProperty("_TopColor")).ToList();
+                List<SlimeAppearanceStructure> qStructures = qubit.Structures.Where(x => x.DefaultMaterials != null && x.DefaultMaterials.Length > 0 && x.DefaultMaterials[0].HasProperty("_TopColor")).ToList();
                 Material mat = Material.Instantiate(quantumMat);
                 mat.SetFloat("_GhostToggle", 1f);
                 for (int i = 0; i < qStructures.Count; i++)
@@ -250,18 +250,18 @@ namespace SRML.SR
                 largoPrefab.GetComponent<ReactToToyNearby>().slimeDefinition = def;
 
             foreach (Component component in slime2Prefab.GetComponents(typeof(Component)))
-                if (!largoPrefab.HasComponent(component.GetType()))
+            {
+                if (!largoPrefab.HasComponent(component.GetType()) || (typeof(Collider).IsAssignableFrom(component.GetType()) && ((Collider)component).isTrigger))
                     largoPrefab.AddComponent(component.GetType()).GetCopyOf(component);
+            }
 
             if (def.Sounds != null)
                 largoPrefab.GetComponent<SlimeAudio>().slimeSounds = def.Sounds;
 
-            SphereCollider col = largoPrefab.GetComponent<SphereCollider>();
-            if (col != null && col.radius == defaultRadius)
-            {
-                col.radius = slime2Prefab.GetComponent<SphereCollider>().radius == defaultRadius ? col.radius : slime2Prefab.GetComponent<SphereCollider>().radius;
-                col.center = slime2Prefab.GetComponent<SphereCollider>().radius == defaultRadius ? col.center : slime2Prefab.GetComponent<SphereCollider>().center;
-            }
+            SphereCollider col = largoPrefab.GetComponents<SphereCollider>().FirstOrDefault(x => !x.isTrigger);
+            SphereCollider col2 = slime2Prefab.GetComponents<SphereCollider>().FirstOrDefault(x => !x.isTrigger);
+            col.radius = (col2.radius + col2.radius) / 2;
+            col.center = col2.center != Vector3.zero ? col2.center : col.center;
 
             foreach (Transform transform in slime2Prefab.transform)
             {

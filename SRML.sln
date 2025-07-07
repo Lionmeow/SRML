@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRMLInstaller", "SRMLInstal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleMod", "SampleMod\SampleMod.csproj", "{9593A86F-00E8-4F6B-BCB1-04D049250085}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRML.Editor", "SMRL.Editor\SRML.Editor.csproj", "{D462E179-1C78-452B-94BF-64ABAAF2AB35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRML.Editor", "SRML.Editor\SRML.Editor.csproj", "{D462E179-1C78-452B-94BF-64ABAAF2AB35}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
