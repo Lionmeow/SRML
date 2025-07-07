@@ -17,6 +17,7 @@ namespace SRML.SR
         private static bool initialized;
         public static Dictionary<string, SlimeAppearanceElement> replaceElements = new Dictionary<string, SlimeAppearanceElement>();
         public static List<string> dontReplaceMats = new List<string>();
+        public static List<Shader> dontReplaceShaders = new List<Shader>();
 
         internal static void Initialize(SlimeDefinitions defs)
         {
@@ -25,6 +26,8 @@ namespace SRML.SR
             defaultRadius = GameContext.Instance.LookupDirector.GetPrefab(Identifiable.Id.PINK_SLIME).GetComponent<SphereCollider>().radius;
             replaceElements.Add("Rad Aura", defs.GetAppearanceById(Identifiable.Id.PINK_RAD_LARGO).Structures[1].Element);
             replaceElements.Add("Rad Exotic Aura", (SlimeAppearanceElement)Resources.Load("dlc/secret_style/assets/actor/slime/element/RadAuraLargoExotic"));
+            dontReplaceMats.Add("slimeGoldFace");
+            dontReplaceShaders.Add(Shader.Find("SR/Null Render"));
             initialized = true;
         }
 
@@ -374,26 +377,29 @@ namespace SRML.SR
 
         internal static void ReplaceRecolorStructureMats(bool replace, bool recolor, SlimeAppearanceStructure structure, SlimeAppearanceStructure reference)
         {
-            if (replace && !structure.DefaultMaterials.Any(x => dontReplaceMats.Contains(x.name))) 
+            if (replace && !structure.DefaultMaterials.Any(x => dontReplaceMats.Contains(x.name) || dontReplaceShaders.Contains(x.shader)))
                 structure.DefaultMaterials = structure.DefaultMaterials.DuplicateMats(reference.DefaultMaterials);
-            else 
+            else
                 structure.DefaultMaterials = structure.DefaultMaterials.DuplicateMats();
 
             if (recolor)
             {
-                Material mat = reference.DefaultMaterials[0];
-                int z = 0;
-                foreach (Material mat1 in structure.DefaultMaterials)
+                Material refMat = reference.DefaultMaterials.FirstOrDefault(x => x.HasProperty("_TopColor"));
+                if (refMat == null)
                 {
-                    Material cloned1 = GameObject.Instantiate(mat1);
-                    if (cloned1.HasProperty("_TopColor"))
-                    {
-                        cloned1.SetColor("_TopColor", mat.GetColor("_TopColor"));
-                        cloned1.SetColor("_MiddleColor", mat.GetColor("_MiddleColor"));
-                        cloned1.SetColor("_BottomColor", mat.GetColor("_BottomColor"));
-                    }
-                    structure.DefaultMaterials[z] = cloned1;
-                    z++;
+                    Console.Console.Instance.LogWarning($"Trying to recolor structure {structure.Element.Name} via {reference.Element.Name}, but ref has no colored material to take from!");
+                    return;
+                }
+
+                for (int i = 0; i < structure.DefaultMaterials.Length; i++)
+                {
+                    if (!structure.DefaultMaterials[i].HasProperty("_TopColor"))
+                        continue;
+
+                    Material m = structure.DefaultMaterials[i] = UnityEngine.Object.Instantiate(structure.DefaultMaterials[i]);
+                    m.SetColor("_TopColor", refMat.GetColor("_TopColor"));
+                    m.SetColor("_MiddleColor", refMat.GetColor("_MiddleColor"));
+                    m.SetColor("_BottomColor", refMat.GetColor("_BottomColor"));
                 }
             }
         }
